@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adaptabilidade · Microlearning</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0e0e10;
+    --paper: #f5f2eb;
+    --accent: #e8441a;
+    --accent2: #2563c4;
+    --muted: #7a7672;
+    --card: #ffffff;
+    --border: #dedad3;
+    --success: #1a7a3f;
+  }
+ 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+ 
+  /* PROGRESS BAR */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--accent);
+    transition: width 0.5s ease;
+    z-index: 100;
+  }
+ 
+  /* HEADER */
+  .header {
+    padding: 24px 32px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+ 
+  .badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(232,68,26,0.1);
+    padding: 4px 12px;
+    border-radius: 2px;
+  }
+ 
+  .step-count {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+ 
+  /* SCREEN SYSTEM */
+  .screen {
+    display: none;
+    animation: fadeUp 0.45s ease forwards;
+  }
+  .screen.active { display: block; }
+ 
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+ 
+  /* MAIN CONTAINER */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+ 
+  /* INTRO SCREEN */
+  .intro-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+ 
+  .intro-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(40px, 8vw, 72px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+ 
+  .intro-title span { color: var(--accent); }
+ 
+  .intro-sub {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 480px;
+    margin-bottom: 40px;
+    font-weight: 300;
+  }
+ 
+  .intro-meta {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+ 
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+ 
+  .meta-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+ 
+  /* CONTENT CARD */
+  .content-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 36px;
+    margin-bottom: 24px;
+  }
+ 
+  .card-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+ 
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+ 
+  .card-body {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #2a2a2a;
+    font-weight: 300;
+  }
+ 
+  .card-body strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+ 
+  /* HIGHLIGHT BOX */
+  .highlight {
+    border-left: 3px solid var(--accent);
+    background: rgba(232,68,26,0.05);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 4px 4px 0;
+  }
+ 
+  .highlight p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    font-style: italic;
+    font-weight: 300;
+  }
+ 
+  /* SCENARIO */
+  .scenario-box {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 4px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+ 
+  .scenario-tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+ 
+  .scenario-text {
+    font-size: 16px;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+ 
+  /* QUIZ */
+  .quiz-question {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 24px;
+  }
+ 
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+ 
+  .option {
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 16px 20px;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    background: var(--card);
+    text-align: left;
+    color: var(--ink);
+  }
+ 
+  .option:hover:not(:disabled) {
+    border-color: var(--accent2);
+    background: rgba(37,99,196,0.04);
+  }
+ 
+  .option.correct {
+    border-color: var(--success);
+    background: rgba(26,122,63,0.08);
+    color: var(--success);
+  }
+ 
+  .option.wrong {
+    border-color: #cc2a2a;
+    background: rgba(204,42,42,0.06);
+    color: #cc2a2a;
+  }
+ 
+  .option:disabled { cursor: default; }
+ 
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 20px;
+    padding: 16px 20px;
+    border-radius: 4px;
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 300;
+    display: none;
+  }
+ 
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: rgba(26,122,63,0.08); border: 1px solid rgba(26,122,63,0.2); color: #1a5c30; }
+  .feedback.wrong-fb { background: rgba(204,42,42,0.06); border: 1px solid rgba(204,42,42,0.2); color: #8b1a1a; }
+ 
+  /* REFLECTION */
+  .reflection-prompt {
+    font-size: 18px;
+    line-height: 1.6;
+    font-weight: 300;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+ 
+  textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--card);
+    resize: vertical;
+    min-height: 120px;
+    transition: border-color 0.2s;
+  }
+ 
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent2);
+  }
+ 
+  textarea::placeholder { color: var(--muted); }
+ 
+  /* TIPS LIST */
+  .tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+  }
+ 
+  .tip-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+ 
+  .tip-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent);
+    min-width: 24px;
+    padding-top: 2px;
+  }
+ 
+  .tip-text {
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 300;
+    color: #2a2a2a;
+  }
+ 
+  .tip-text strong { font-weight: 600; color: var(--ink); }
+ 
+  /* FINISH SCREEN */
+  .finish-icon {
+    font-size: 56px;
+    margin-bottom: 24px;
+  }
+ 
+  .finish-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 6vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+ 
+  .finish-title span { color: var(--accent); }
+ 
+  .finish-body {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 440px;
+    font-weight: 300;
+    margin-bottom: 36px;
+  }
+ 
+  .competency-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 18px;
+    border-radius: 2px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+ 
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 16px 28px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+  }
+ 
+  .btn:hover { background: #c4380f; transform: translateY(-1px); }
+ 
+  .btn-outline {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+  }
+ 
+  .btn-outline:hover { background: var(--ink); color: var(--paper); transform: translateY(-1px); }
+ 
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+ 
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+ 
+  /* DECORATIVE */
+  .deco-line {
+    width: 40px;
+    height: 3px;
+    background: var(--accent);
+    margin-bottom: 24px;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+ 
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+ 
+<div class="header">
+  <span class="badge">Microlearning</span>
+  <span class="step-count" id="stepCount">1 de 5</span>
+</div>
+ 
+<!-- SCREEN 1: INTRO -->
+<div class="screen active" id="screen-1">
+  <div class="container">
+    <div class="deco-line"></div>
+    <p class="intro-eyebrow">Competência · Trilha de Desenvolvimento</p>
+    <h1 class="intro-title">Adapta<span>bili</span><br>dade</h1>
+    <p class="intro-sub">Em 5 minutos você vai entender o que é adaptabilidade de verdade — e sair com ferramentas práticas para o seu dia a dia.</p>
+    <div class="intro-meta">
+      <div class="meta-item"><div class="meta-dot"></div> 5 min de leitura</div>
+      <div class="meta-item"><div class="meta-dot"></div> 1 cenário real</div>
+      <div class="meta-item"><div class="meta-dot"></div> 1 quiz + reflexão</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="goTo(2)">Começar →</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- SCREEN 2: CONCEITO -->
+<div class="screen" id="screen-2">
+  <div class="container">
+    <div class="content-card">
+      <div class="card-label">01 · Conceito</div>
+      <h2 class="card-title">Adaptabilidade não é resignação</h2>
+      <div class="card-body">
+        <p>Muita gente confunde adaptabilidade com simplesmente "aceitar" as mudanças. <strong>Não é isso.</strong></p>
+        <div class="highlight">
+          <p>Adaptabilidade é a capacidade de manter a efetividade e o equilíbrio mesmo quando o contexto muda — e agir intencionalmente dentro da nova realidade.</p>
+        </div>
+        <p>Pessoas adaptáveis não são as que "não sofrem" com mudanças. São as que <strong>processam mais rápido, ajustam o curso</strong> e encontram oportunidades onde outros veem obstáculos.</p>
+        <br>
+        <p>Pesquisas da APA (American Psychological Association) mostram que adaptabilidade está diretamente ligada a <strong>menor burnout</strong>, <strong>maior satisfação no trabalho</strong> e <strong>desempenho consistente</strong> em ambientes de alta incerteza.</p>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-outline btn" onclick="goTo(1)">← Voltar</button>
+      <button class="btn" onclick="goTo(3)">Próximo →</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- SCREEN 3: CENÁRIO -->
+<div class="screen" id="screen-3">
+  <div class="container">
+    <div class="content-card">
+      <div class="card-label">02 · Cenário Real</div>
+      <h2 class="card-title">O que você faria?</h2>
+      <div class="card-body">
+        <p>Leia com atenção e pense antes de continuar:</p>
+      </div>
+    </div>
+ 
+    <div class="scenario-box">
+      <div class="scenario-tag">📋 Situação</div>
+      <p class="scenario-text">Você está liderando um projeto há 3 meses. Na semana do lançamento, a diretoria decide mudar completamente o escopo — o produto vai atender um público diferente, com outra linguagem e outra entrega. Você tem 10 dias para reajustar tudo.</p>
+    </div>
+ 
+    <div class="content-card">
+      <div class="card-label">O que separa os perfis</div>
+      <div class="tips-list">
+        <div class="tip-item">
+          <div class="tip-num">❌</div>
+          <div class="tip-text"><strong>Baixa adaptabilidade:</strong> Foca na frustração, questiona a decisão publicamente, paralisa a equipe com a insegurança e entrega com qualidade abaixo do possível.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">✅</div>
+          <div class="tip-text"><strong>Alta adaptabilidade:</strong> Processa a mudança rapidamente, convoca a equipe, reorganiza prioridades com clareza e enxerga o redesign como uma chance de fazer algo melhor.</div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="btn-row">
+      <button class="btn-outline btn" onclick="goTo(2)">← Voltar</button>
+      <button class="btn" onclick="goTo(4)">Próximo →</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- SCREEN 4: QUIZ -->
+<div class="screen" id="screen-4">
+  <div class="container">
+    <div class="content-card">
+      <div class="card-label">03 · Quiz</div>
+      <p class="quiz-question">Qual dessas atitudes demonstra adaptabilidade de forma mais efetiva no ambiente de trabalho?</p>
+      <div class="options" id="quizOptions">
+        <button class="option" onclick="answer(this, false)">Aguardar as coisas se estabilizarem antes de agir, para não tomar decisões precipitadas.</button>
+        <button class="option" onclick="answer(this, true)">Reconhecer rapidamente o que mudou, ajustar o plano e comunicar isso com clareza para a equipe.</button>
+        <button class="option" onclick="answer(this, false)">Manter o plano original para demonstrar consistência e não parecer indeciso.</button>
+        <button class="option" onclick="answer(this, false)">Deixar cada membro da equipe decidir como vai lidar com a mudança de forma independente.</button>
+      </div>
+ 
+      <div class="feedback" id="feedback-correct" style="display:none">
+        ✅ <strong>Correto!</strong> Adaptabilidade exige velocidade de percepção + ação intencional + comunicação clara. Não é sobre agir impulsivamente, mas sobre não se paralisar.
+      </div>
+      <div class="feedback" id="feedback-wrong" style="display:none">
+        💡 <strong>Quase!</strong> A resposta correta é a segunda. Adaptabilidade não é esperar nem manter o plano cegamente — é reconhecer a mudança rapidamente e agir com intenção.
+      </div>
+    </div>
+ 
+    <div class="btn-row">
+      <button class="btn-outline btn" onclick="goTo(3)">← Voltar</button>
+      <button class="btn" id="nextFromQuiz" onclick="goTo(5)" style="display:none">Próximo →</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- SCREEN 5: FERRAMENTAS + REFLEXÃO -->
+<div class="screen" id="screen-5">
+  <div class="container">
+    <div class="content-card">
+      <div class="card-label">04 · Ferramentas Práticas</div>
+      <h2 class="card-title">Como desenvolver adaptabilidade agora</h2>
+      <div class="tips-list">
+        <div class="tip-item">
+          <div class="tip-num">01</div>
+          <div class="tip-text"><strong>Pause antes de reagir.</strong> Quando uma mudança chegar, dê 10 minutos antes de responder. Isso reduz reações impulsivas e amplia a perspectiva.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">02</div>
+          <div class="tip-text"><strong>Separe fatos de interpretações.</strong> "O projeto mudou" é um fato. "Vão achar que falhei" é uma interpretação. Trabalhe com o que é real.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">03</div>
+          <div class="tip-text"><strong>Pratique pequenas incertezas.</strong> Mude uma rotina por semana. Conforto com o novo começa em pequenas doses.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-num">04</div>
+          <div class="tip-text"><strong>Faça a pergunta certa:</strong> Em vez de "por que isso aconteceu comigo?", pergunte "o que posso fazer com o que tenho agora?".</div>
+        </div>
+      </div>
+    </div>
+ 
+    <hr class="divider">
+ 
+    <div class="content-card">
+      <div class="card-label">05 · Reflexão</div>
+      <p class="reflection-prompt">Pense em uma mudança recente no seu trabalho que te desafiou. <strong>O que você faria diferente</strong> com o que aprendeu aqui?</p>
+      <textarea placeholder="Escreva sua reflexão... (só você vai ver)" id="reflectionText"></textarea>
+    </div>
+ 
+    <div class="btn-row">
+      <button class="btn-outline btn" onclick="goTo(4)">← Voltar</button>
+      <button class="btn" onclick="goTo(6)">Concluir →</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- SCREEN 6: CONCLUSÃO -->
+<div class="screen" id="screen-6">
+  <div class="container">
+    <div class="finish-icon">🎯</div>
+    <h2 class="finish-title">Você<br>concluiu<br><span>este módulo.</span></h2>
+    <p class="finish-body">Adaptabilidade é uma competência que se treina — e você acabou de dar um passo concreto nisso.</p>
+ 
+    <div class="competency-tag">✓ Adaptabilidade · Nível Awareness</div>
+ 
+    <div class="content-card">
+      <div class="card-label">O que você viu hoje</div>
+      <div class="tips-list">
+        <div class="tip-item"><div class="tip-num">→</div><div class="tip-text">O que adaptabilidade realmente significa</div></div>
+        <div class="tip-item"><div class="tip-num">→</div><div class="tip-text">Como ela se manifesta (ou não) em situações reais</div></div>
+        <div class="tip-item"><div class="tip-num">→</div><div class="tip-text">4 ferramentas práticas para o dia a dia</div></div>
+        <div class="tip-item"><div class="tip-num">→</div><div class="tip-text">Uma reflexão aplicada à sua realidade</div></div>
+      </div>
+    </div>
+ 
+    <div class="btn-row">
+      <button class="btn" onclick="restart()">Recomeçar</button>
+    </div>
+  </div>
+</div>
+ 
+<script>
+  let currentScreen = 1;
+  const totalScreens = 6;
+ 
+  function goTo(n) {
+    document.getElementById(`screen-${currentScreen}`).classList.remove('active');
+    currentScreen = n;
+    document.getElementById(`screen-${currentScreen}`).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+ 
+  function updateProgress() {
+    const pct = ((currentScreen - 1) / (totalScreens - 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    const labels = ['', '1 de 5', '2 de 5', '3 de 5', '4 de 5', '5 de 5', 'Concluído'];
+    document.getElementById('stepCount').textContent = labels[currentScreen] || '';
+  }
+ 
+  function answer(btn, isCorrect) {
+    const opts = document.querySelectorAll('.option');
+    opts.forEach(o => { o.disabled = true; });
+ 
+    if (isCorrect) {
+      btn.classList.add('correct');
+      document.getElementById('feedback-correct').style.display = 'block';
+      document.getElementById('feedback-correct').classList.add('show', 'correct-fb');
+    } else {
+      btn.classList.add('wrong');
+      document.getElementById('feedback-wrong').style.display = 'block';
+      document.getElementById('feedback-wrong').classList.add('show', 'wrong-fb');
+      // highlight correct
+      opts[1].classList.add('correct');
+    }
+ 
+    document.getElementById('nextFromQuiz').style.display = 'inline-flex';
+  }
+ 
+  function restart() {
+    // reset quiz
+    const opts = document.querySelectorAll('.option');
+    opts.forEach(o => { o.disabled = false; o.classList.remove('correct','wrong'); });
+    document.getElementById('feedback-correct').style.display = 'none';
+    document.getElementById('feedback-wrong').style.display = 'none';
+    document.getElementById('nextFromQuiz').style.display = 'none';
+    document.getElementById('reflectionText').value = '';
+    goTo(1);
+  }
+</script>
+</body>
+</html>
